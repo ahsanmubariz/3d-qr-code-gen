@@ -163,6 +163,21 @@
       justify-content: space-between;
       align-items: center;
     }
+    .hint {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    pre.code {
+      font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #1d1a12;
+      color: #f6f1e7;
+      padding: 14px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      user-select: all;
+    }
   </style>
 </head>
 <body>
@@ -216,6 +231,15 @@
           </button>
         </div>
       </div>
+
+      <div class="field">
+        <div class="row">
+          <label id="embed-label">Embed on your website</label>
+          <button class="btn" id="copy-embed-btn" type="button">Copy code</button>
+        </div>
+        <p class="hint">Paste this where the tree should appear. It loads from this site, so it always gets the latest version.</p>
+        <pre class="code" id="embed-code" tabindex="0" aria-labelledby="embed-label"></pre>
+      </div>
     </div>
   </div>
 
@@ -227,11 +251,43 @@
     const updateBtn = document.getElementById('update-btn');
     const schemeGroup = document.getElementById('scheme-group');
     const downloadHtmlBtn = document.getElementById('download-html-btn');
+    const embedCode = document.getElementById('embed-code');
+    const copyEmbedBtn = document.getElementById('copy-embed-btn');
+
+    // Script host for the embed snippet: this site when deployed, the production site when run locally
+    const EMBED_ORIGIN = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) || location.protocol === 'file:'
+      ? 'https://3d-qr-gen.pages.dev'
+      : location.origin;
+
+    // Escape user input before putting it inside an HTML attribute
+    const attr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    function renderEmbed() {
+      const data = attr(tree.getAttribute('data') || location.origin);
+      const scheme = attr(tree.getAttribute('scheme') || 'core-blue');
+      embedCode.textContent =
+        `<script type="module" src="${EMBED_ORIGIN}/dist/qr-tree.js"><\/script>\n` +
+        `<qr-tree data="${data}" scheme="${scheme}" autorotate style="max-width: 480px"></qr-tree>`;
+    }
+    renderEmbed();
+
+    copyEmbedBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(embedCode.textContent);
+        copyEmbedBtn.textContent = 'Copied!';
+      } catch {
+        // Clipboard blocked (e.g. insecure context): select the code so the user can copy it manually
+        getSelection().selectAllChildren(embedCode);
+        copyEmbedBtn.textContent = 'Press Ctrl+C';
+      }
+      setTimeout(() => (copyEmbedBtn.textContent = 'Copy code'), 1800);
+    });
 
     updateBtn.addEventListener('click', () => {
       const val = urlInput.value.trim();
       if (val) {
         tree.setAttribute('data', val);
+        renderEmbed();
       }
     });
 
@@ -246,6 +302,7 @@
       pill.classList.add('active');
       const s = pill.dataset.scheme;
       tree.setAttribute('scheme', s);
+      renderEmbed();
     });
 
     downloadHtmlBtn.addEventListener('click', async () => {
@@ -265,7 +322,7 @@
 
       const scriptContent = bundleJs
         ? `<!-- Self-contained bundle (works offline in file:/// or hosted on any server) -->\n  <script type="module">\n${bundleJs}\n  <\/script>`
-        : `<!-- QR Tree via CDN -->\n  <script type="module" src="https://unpkg.com/qr-tree@latest/dist/qr-tree.js"><\/script>`;
+        : `<!-- QR Tree from the hosted site -->\n  <script type="module" src="${EMBED_ORIGIN}/dist/qr-tree.js"><\/script>`;
 
       const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -293,7 +350,7 @@
   ${scriptContent}
 </head>
 <body>
-  <qr-tree data="${data}" scheme="${scheme}" autorotate></qr-tree>
+  <qr-tree data="${attr(data)}" scheme="${attr(scheme)}" autorotate></qr-tree>
 </body>
 </html>`;
 

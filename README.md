@@ -24,11 +24,13 @@ The transition is a smooth dolly-zoom from the current camera angle into a flat,
 ### 1. Plain HTML / static website
 
 ```html
-<!-- Load the script once (host dist/qr-tree.js yourself, e.g. on Cloudflare Pages, see below) -->
-<script type="module" src="https://your-domain.com/dist/qr-tree.js"></script>
+<!-- Load the script once (or self-host dist/qr-tree.js, see "Deploy to Cloudflare Pages") -->
+<script type="module" src="https://3d-qr-gen.pages.dev/dist/qr-tree.js"></script>
 
 <qr-tree data="https://your-website.com" scheme="core-blue" autorotate></qr-tree>
 ```
+
+The demo site ([3d-qr-gen.pages.dev](https://3d-qr-gen.pages.dev/)) has an **Embed on your website** panel that generates this snippet for your URL and colour scheme, with a copy button.
 
 The element is square by default (`aspect-ratio: 1 / 1`); size it with CSS `width`.
 
