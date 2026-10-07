@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Tree Test Runner</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f6f1e7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    qr-tree {
+      width: 700px;
+      height: 700px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script type="module" src="/dist/qr-tree.js"></script>
+  <script type="module">
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get('url') || 'https://github.com';
+    const season = params.get('season') || 'spring';
+
+    const el = document.createElement('qr-tree');
+    el.setAttribute('data', url);
+    el.setAttribute('season', season);
+    el.setAttribute('show-qr', ''); // start directly in top-down QR mode
+    el.setAttribute('no-controls', '');
+    document.getElementById('container').appendChild(el);
+  </script>
+</body>
+</html>

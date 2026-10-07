@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output (regenerate with `npm run build` / `npm run build:site`)
+dist/
+site/
+
+# Test artifacts (written by test runs)
+test-results/
+test/*.png
+test/downloaded_test.html
+
+# Logs & local env
+*.log
+.env
+.env.*
+.wrangler/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

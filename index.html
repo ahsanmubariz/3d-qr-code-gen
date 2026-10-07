@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Tree QR Generator</title>
+  <style>
+    :root {
+      --bg: #f6f1e7;
+      --card-bg: #ffffff;
+      --text: #2c251e;
+      --text-muted: #746858;
+      --primary: #ffd23f;
+      --primary-hover: #ffdb63;
+      --border: #e8decb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 900px;
+      gap: 24px;
+    }
+    .preview-card {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+    qr-tree {
+      width: 100%;
+      height: 480px;
+      border-radius: 16px;
+      background: #f6f1e7;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+    input[type="text"], input[type="url"] {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      outline: none;
+      background: #faf7f2;
+    }
+    input[type="text"]:focus, input[type="url"]:focus {
+      border-color: #c9b48b;
+      background: #fff;
+    }
+    button.btn {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--primary);
+      color: #1d1a12;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    button.btn:hover {
+      background: var(--primary-hover);
+    }
+    .radio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .radio-pill {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #faf7f2;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .radio-pill.active {
+      background: #1d1a12;
+      color: #fff;
+      border-color: #1d1a12;
+    }
+    .color-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(0,0,0,0.15);
+    }
+    .radio-pill.active .color-dot {
+      border-color: rgba(255,255,255,0.6);
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>3D Tree QR Generator</h1>
+    <p class="subtitle">Click tree or drag viewfinder to switch between 3D tree and QR code</p>
+  </header>
+
+  <div class="main-container">
+    <div class="preview-card">
+      <qr-tree id="tree" data="https://github.com" scheme="core-blue" autorotate></qr-tree>
+    </div>
+
+    <div class="controls">
+      <div class="field">
+        <label for="url-input">Target URL</label>
+        <div class="input-row">
+          <input type="text" id="url-input" value="https://github.com" placeholder="https://your-website.com" />
+          <button class="btn" id="update-btn">Update</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Brand Color Scheme</label>
+        <div class="radio-grid" id="scheme-group">
+          <div class="radio-pill active" data-scheme="core-blue">
+            <span class="color-dot" style="background: #202887;"></span>
+            <span>Core Blue</span>
+          </div>
+          <div class="radio-pill" data-scheme="hitech-violet">
+            <span class="color-dot" style="background: #3E3EF4;"></span>
+            <span>Hi-tech Violet</span>
+          </div>
+          <div class="radio-pill" data-scheme="legacy-purple">
+            <span class="color-dot" style="background: #D861FF;"></span>
+            <span>Legacy Purple</span>
+          </div>
+          <div class="radio-pill" data-scheme="soft-purple">
+            <span class="color-dot" style="background: #D8D8FC;"></span>
+            <span>Soft Purple</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top: 4px;">
+        <label>Export</label>
+        <div>
+          <button class="btn" id="download-html-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download HTML
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './src/index.ts';
+
+    const tree = document.getElementById('tree');
+    const urlInput = document.getElementById('url-input');
+    const updateBtn = document.getElementById('update-btn');
+    const schemeGroup = document.getElementById('scheme-group');
+    const downloadHtmlBtn = document.getElementById('download-html-btn');
+
+    updateBtn.addEventListener('click', () => {
+      const val = urlInput.value.trim();
+      if (val) {
+        tree.setAttribute('data', val);
+      }
+    });
+
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') updateBtn.click();
+    });
+
+    schemeGroup.addEventListener('click', (e) => {
+      const pill = e.target.closest('.radio-pill');
+      if (!pill) return;
+      schemeGroup.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const s = pill.dataset.scheme;
+      tree.setAttribute('scheme', s);
+    });
+
+    downloadHtmlBtn.addEventListener('click', async () => {
+      const data = tree.getAttribute('data') || 'https://github.com';
+      const scheme = tree.getAttribute('scheme') || 'core-blue';
+
+      // Inline the self-contained bundle so the downloaded file works 100% offline and in file:/// without CORS errors
+      let bundleJs = '';
+      try {
+        const resp = await fetch('/dist/qr-tree.js');
+        if (resp.ok) {
+          bundleJs = await resp.text();
+        }
+      } catch (err) {
+        console.warn('Could not fetch bundle to inline:', err);
+      }
+
+      const scriptContent = bundleJs
+        ? `<!-- Self-contained bundle (works offline in file:/// or hosted on any server) -->\n  <script type="module">\n${bundleJs}\n  <\/script>`
+        : `<!-- QR Tree via CDN -->\n  <script type="module" src="https://unpkg.com/qr-tree@latest/dist/qr-tree.js"><\/script>`;
+
+      const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Tree</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #f6f1e7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    qr-tree {
+      width: min(90vmin, 650px);
+      height: min(90vmin, 650px);
+      aspect-ratio: 1 / 1;
+    }
+  </style>
+  ${scriptContent}
+</head>
+<body>
+  <qr-tree data="${data}" scheme="${scheme}" autorotate></qr-tree>
+</body>
+</html>`;
+
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `qr-tree-${scheme}.html`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+  </script>
+</body>
+</html>

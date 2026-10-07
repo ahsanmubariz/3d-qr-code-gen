@@ -1,0 +1,37 @@
+{
+  "name": "qr-tree",
+  "version": "0.1.0",
+  "description": "Embeddable 3D tree that doubles as a scannable QR code (Web Component, Three.js).",
+  "type": "module",
+  "main": "dist/qr-tree.js",
+  "module": "dist/qr-tree.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:site": "tsc --noEmit && vite build --mode site",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node test/scan.test.mjs && node test/interaction.test.mjs"
+  },
+  "keywords": [
+    "qr",
+    "qrcode",
+    "three",
+    "web-component"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.6",
+    "@types/three": "^0.186.0",
+    "jsqr": "^1.4.0",
+    "playwright": "^1.63.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.3"
+  }
+}
